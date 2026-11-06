@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBSE Class XII Physical Education Practical File</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --page-w:210mm;
+  --page-h:297mm;
+
+  /* palette */
+  --ink:#14213d;
+  --ink-2:#2c3e50;
+  --muted:#6b7280;
+  --paper:#fdfcf8;
+  --paper-tint:#f7f3e8;
+  --rule:#e5ddc8;
+  --gold:#b8860b;
+  --gold-soft:#e8d9a0;
+  --gold-bg:#fdf8ea;
+  --red:#8b1e3f;
+  --green:#4a7c59;
+  --blue:#2e5a8a;
+  --bad:#a0522d;
+
+  --sidebar-w:270px;
+  --toolbar-h:60px;
+}
+
+body{
+  font-family:'Inter',-apple-system,'Segoe UI',sans-serif;
+  background:#e8e2d3;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(184,134,11,0.06) 0%, transparent 55%),
+    radial-gradient(circle at 85% 80%, rgba(20,33,61,0.06) 0%, transparent 55%);
+  color:var(--ink-2);
+  overflow:hidden;
+  height:100vh;
+}
+
+#app{display:flex;height:100vh;width:100vw}
+
+/* ============ SIDEBAR ============ */
+#sidebar{
+  width:var(--sidebar-w);
+  background:linear-gradient(180deg,#14213d 0%,#0f1a30 100%);
+  color:#e8eaf6;
+  display:flex;flex-direction:column;
+  transition:transform .3s ease;
+  z-index:100;flex-shrink:0;
+  box-shadow:4px 0 24px rgba(0,0,0,0.12);
+}
+#sidebar.hidden{transform:translateX(-100%);width:0}
+
+.sidebar-header{
+  padding:22px 20px 18px;
+  border-bottom:1px solid rgba(184,134,11,0.25);
+}
+.sidebar-header h1{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:19px;font-weight:600;letter-spacing:0.2px;
+  color:#fdfcf8;
+}
+.sidebar-header h1 span{color:var(--gold)}
+.sidebar-header p{
+  font-size:10.5px;opacity:.7;margin-top:6px;
+  letter-spacing:1.5px;text-transform:uppercase;font-weight:500;
+}
+
+.page-list{flex:1;overflow-y:auto;padding:10px 8px}
+.page-list button{
+  display:block;width:100%;text-align:left;
+  padding:9px 12px;
+  background:transparent;border:none;
+  color:#c5cce0;font-size:12.5px;
+  cursor:pointer;border-radius:6px;
+  border-left:2px solid transparent;
+  margin-bottom:1px;
+  font-family:inherit;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.page-list button:hover{background:rgba(255,255,255,0.06);color:#fff}
+.page-list button.active{
+  background:rgba(184,134,11,0.14);
+  border-left-color:var(--gold);
+  color:#fff;font-weight:500;
+}
+.page-list button .pg-num{
+  display:inline-block;width:24px;
+  font-family:'JetBrains Mono','Courier New',monospace;
+  font-size:10.5px;font-weight:500;
+  color:var(--gold);opacity:.85;
+}
+
+/* ============ MAIN ============ */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* ============ TOOLBAR ============ */
+#toolbar{
+  height:var(--toolbar-h);
+  background:rgba(253,252,248,0.95);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:4px;padding:0 14px;
+  flex-shrink:0;overflow-x:auto;
+  box-shadow:0 1px 3px rgba(20,33,61,0.04);
+  z-index:50;
+}
+#toolbar button{
+  background:transparent;border:1px solid transparent;
+  border-radius:6px;padding:7px 11px;
+  font-size:12px;cursor:pointer;white-space:nowrap;
+  color:var(--ink);font-family:inherit;font-weight:500;
+  transition:all .15s;
+}
+#toolbar button:hover{background:var(--paper-tint);border-color:var(--rule)}
+#toolbar button.primary{
+  background:var(--ink);color:#fdfcf8;border-color:var(--ink);
+}
+#toolbar button.primary:hover{background:#0f1a30}
+#toolbar .spacer{flex:1}
+#page-indicator{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;font-weight:500;
+  color:var(--ink);white-space:nowrap;padding:0 10px;
+  letter-spacing:0.5px;
+}
+#zoom-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;min-width:44px;text-align:center;
+  color:var(--muted);
+}
+
+/* ============ VIEWER ============ */
+#viewer{
+  flex:1;overflow:auto;padding:32px 24px;
+  display:flex;justify-content:center;align-items:flex-start;
+}
+#pages-container{
+  display:flex;flex-direction:column;align-items:center;gap:36px;
+  transform-origin:top center;
+}
+
+/* ============ A4 PAGE ============ */
+.page{
+  width:var(--page-w);height:var(--page-h);
+  background:var(--paper);
+  position:relative;
+  padding:18mm 16mm 18mm 16mm;
+  box-shadow:
+    0 1px 2px rgba(20,33,61,0.06),
+    0 6px 28px rgba(20,33,61,0.10);
+  border:1px solid rgba(229,221,200,0.6);
+  overflow:hidden;
+  color:var(--ink-2);
+  display:flex;flex-direction:column;
+  flex-shrink:0;
+  background-image:
+    linear-gradient(180deg, rgba(184,134,11,0.015) 0%, transparent 40%);
+}
+.page.hidden-page{display:none}
+
+/* inner frame */
+.page::before{
+  content:'';position:absolute;
+  top:9mm;left:9mm;right:9mm;bottom:9mm;
+  border:1px solid rgba(184,134,11,0.18);
+  border-radius:2px;
+  pointer-events:none;z-index:0;
+}
+.page > *{position:relative;z-index:1}
+
+.page-footer{
+  position:absolute;bottom:11mm;left:0;right:0;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;letter-spacing:2px;
+  color:var(--gold);opacity:.65;
+}
+.page-footer::before,
+.page-footer::after{
+  content:'';display:inline-block;
+  width:20px;height:1px;background:var(--gold);
+  opacity:.4;vertical-align:middle;margin:0 8px;
+}
+
+/* ============ PAGE HEADER ============ */
+.page-header{margin-bottom:16px}
+.section-tag{
+  display:inline-block;
+  font-family:'Inter',sans-serif;
+  font-size:9px;font-weight:600;
+  letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--gold);
+  padding:4px 10px;
+  background:rgba(184,134,11,0.09);
+  border-radius:3px;
+  margin-bottom:10px;
+}
+.page[data-section="yoga"] .section-tag{color:var(--green);background:rgba(74,124,89,0.10)}
+.page[data-section="fitness"] .section-tag{color:var(--blue);background:rgba(46,90,138,0.10)}
+.page[data-section="badminton"] .section-tag{color:var(--bad);background:rgba(160,82,45,0.10)}
+.page[data-section="front"] .section-tag,
+.page[data-section="closing"] .section-tag{color:var(--gold);background:rgba(184,134,11,0.09)}
+
+.page h2{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:25px;font-weight:600;color:var(--ink);
+  letter-spacing:-0.3px;line-height:1.15;
+  margin:0;
+}
+.h2-sub{
+  display:block;font-size:14px;font-weight:400;
+  font-style:italic;color:var(--muted);
+  margin-top:4px;letter-spacing:0;
+}
+.title-rule{
+  width:52px;height:3px;
+  background:var(--gold);
+  margin-top:10px;border-radius:2px;
+}
+.page[data-section="yoga"] .title-rule{background:var(--green)}
+.page[data-section="fitness"] .title-rule{background:var(--blue)}
+.page[data-section="badminton"] .title-rule{background:var(--bad)}
+
+/* ============ TYPOGRAPHY ============ */
+.page h3{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:15px;font-weight:600;
+  color:var(--ink);
+  margin:14px 0 6px;
+  display:flex;align-items:baseline;gap:8px;
+}
+.page h3::before{
+  content:'';display:inline-block;
+  width:3px;height:14px;
+  background:var(--gold);
+  border-radius:2px;
+  transform:translateY(2px);
+  flex-shrink:0;
+}
+.page[data-section="yoga"] h3::before{background:var(--green)}
+.page[data-section="fitness"] h3::before{background:var(--blue)}
+.page[data-section="badminton"] h3::before{background:var(--bad)}
+
+.page p,.page li{
+  font-size:12px;line-height:1.6;
+  text-align:justify;color:var(--ink-2);
+}
+.page p{margin-bottom:8px}
+.page p:last-child{margin-bottom:0}
+.page ul,.page ol{padding-left:18px;margin:4px 0 8px}
+.page li{margin-bottom:3px;line-height:1.55}
+.page strong{color:var(--ink);font-weight:600}
+.page em{color:var(--ink);font-style:italic}
+
+/* ============ STEPS (numbered circles) ============ */
+.steps{list-style:none;counter-reset:step;padding:0;margin:6px 0 8px}
+.steps li{
+  counter-increment:step;
+  padding-left:26px;position:relative;
+  font-size:11.5px;line-height:1.5;
+  margin-bottom:4px;
+}
+.steps li::before{
+  content:counter(step);
+  position:absolute;left:0;top:0;
+  width:18px;height:18px;
+  border-radius:50%;
+  background:var(--ink);color:#fdfcf8;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ============ CARDS / BOXES ============ */
+.info-card{
+  background:#fff;
+  border:1px solid var(--rule);
+  border-left:3px solid var(--gold);
+  border-radius:6px;
+  padding:10px 14px;
+  margin:10px 0;
+  font-size:11.5px;
+  line-height:1.55;
+}
+.info-card.green{border-left-color:var(--green)}
+.info-card.red{border-left-color:var(--red)}
+.info-card.blue{border-left-color:var(--blue)}
+.info-card.tint{background:var(--paper-tint)}
+.info-card .card-head{
+  font-size:10.5px;font-weight:600;
+  text-transform:uppercase;letter-spacing:1.2px;
+  color:var(--muted);margin-bottom:4px;
+}
+
+.two-col{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin:8px 0;
+}
+
+/* ============ FACTS STRIP ============ */
+.facts{
+  display:flex;gap:14px;flex-wrap:wrap;
+  padding:8px 12px;
+  background:var(--paper-tint);
+  border-radius:6px;
+  margin:6px 0 10px;
+  border:1px solid var(--rule);
+}
+.fact{font-size:11px;line-height:1.4}
+.fact-label{
+  display:block;
+  font-size:9px;font-weight:600;
+  text-transform:uppercase;letter-spacing:1.2px;
+  color:var(--muted);margin-bottom:1px;
+}
+.fact-value{color:var(--ink);font-weight:500;font-size:11.5px}
+
+/* ============ DIAGRAM ============ */
+.diagram{
+  display:flex;justify-content:center;align-items:center;
+  margin:8px 0;padding:6px;
+  background:var(--paper-tint);
+  border-radius:6px;
+  border:1px solid var(--rule);
+}
+.diagram svg{max-width:100%;height:auto}
+.caption{
+  text-align:center;font-size:10px;color:var(--muted);
+  font-style:italic;margin-top:4px;letter-spacing:.2px;
+}
+
+/* ============ TABLES ============ */
+.page table{
+  width:100%;border-collapse:collapse;
+  font-size:11px;margin:8px 0;
+  border:1px solid var(--rule);
+  border-radius:4px;overflow:hidden;
+}
+.page th{
+  background:var(--ink);color:#fdfcf8;
+  font-weight:600;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:0.5px;
+  padding:7px 10px;text-align:left;
+}
+.page td{
+  padding:6px 10px;
+  border-top:1px solid var(--rule);
+  vertical-align:top;line-height:1.5;
+}
+.page tr:nth-child(even) td{background:rgba(247,243,232,0.5)}
+.page td strong{color:var(--ink)}
+
+/* ============ VIVA BOX ============ */
+.viva{
+  background:linear-gradient(180deg,#fdf8ea 0%,#faf1d4 100%);
+  border:1px solid var(--gold-soft);
+  border-radius:6px;
+  padding:11px 14px;
+  margin:12px 0 6px;
+  position:relative;
+}
+.viva::before{
+  content:'';position:absolute;
+  top:-1px;left:20px;right:20px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  border-radius:2px;
+}
+.viva-head{
+  display:flex;align-items:center;gap:7px;
+  font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.3px;
+  color:#8b6914;margin-bottom:7px;
+}
+.viva-icon{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--gold);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  font-family:Georgia,serif;
+  flex-shrink:0;
+}
+.viva dl{margin:0}
+.viva dt{
+  font-weight:600;font-size:11.5px;
+  color:#4a3520;margin-top:6px;line-height:1.4;
+}
+.viva dt:first-of-type{margin-top:0}
+.viva dd{
+  font-size:11.5px;color:#3a3a3a;
+  margin-left:14px;line-height:1.5;
+}
+
+/* ============ ASANA CARD (compact) ============ */
+.asana-card{
+  border:1px solid var(--rule);
+  border-radius:6px;
+  padding:10px 12px;
+  margin-bottom:10px;
+  background:#fff;
+}
+.asana-title{
+  display:flex;align-items:baseline;gap:8px;
+  margin-bottom:6px;
+  padding-bottom:5px;
+  border-bottom:1px dashed var(--rule);
+}
+.asana-title .asana-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:500;
+  color:var(--gold);
+  padding:2px 6px;
+  background:var(--gold-bg);
+  border-radius:3px;
+}
+.asana-title h4{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:13.5px;color:var(--ink);
+  font-weight:600;margin:0;
+}
+.asana-title .asana-eng{
+  font-size:10.5px;font-style:italic;
+  color:var(--muted);
+}
+.asana-grid{
+  display:grid;grid-template-columns:150px 1fr;
+  gap:12px;align-items:start;
+}
+.asana-grid svg{width:100%;height:auto}
+.asana-info p{
+  font-size:11px;line-height:1.5;
+  margin-bottom:4px;text-align:left;
+}
+.asana-info strong{color:var(--ink);font-weight:600}
+
+/* ============ COVER ============ */
+.cover-frame{
+  position:absolute;
+  top:14mm;left:14mm;right:14mm;bottom:14mm;
+  border:2px solid var(--gold);
+  border-radius:2px;
+  pointer-events:none;z-index:0;
+}
+.cover-frame::before{
+  content:'';position:absolute;
+  inset:5px;
+  border:1px solid var(--gold);
+  opacity:.5;
+  border-radius:1px;
+}
+.cover-inner{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+  align-items:center;
+  height:100%;
+  padding:30px 20px 20px;
+  text-align:center;
+}
+.cover-emblem{margin-bottom:14px}
+.cover-school{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:22px;font-weight:700;
+  color:var(--ink);
+  letter-spacing:1.5px;
+  line-height:1.2;
+}
+.cover-affil{
+  font-size:10.5px;color:var(--muted);
+  letter-spacing:2px;text-transform:uppercase;
+  margin-top:6px;font-weight:500;
+}
+.cover-divider{
+  display:flex;align-items:center;gap:12px;
+  margin:18px 0 14px;width:60%;
+}
+.cover-divider .line{
+  flex:1;height:1px;background:var(--gold);opacity:.5;
+}
+.cover-divider .dot{
+  width:6px;height:6px;border-radius:50%;background:var(--gold);
+}
+.cover-type{
+  font-size:12px;letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--muted);font-weight:500;
+  margin-bottom:6px;
+}
+.cover-title{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:38px;font-weight:700;
+  color:var(--ink);
+  letter-spacing:-0.5px;
+  line-height:1.1;
+  margin-bottom:6px;
+}
+.cover-title em{
+  color:var(--gold);font-style:normal;
+}
+.cover-class{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:15px;font-style:italic;
+  color:var(--ink-2);
+}
+.cover-info{
+  margin-top:auto;margin-bottom:14px;
+  display:flex;flex-direction:column;gap:12px;
+  width:100%;max-width:280px;
+}
+.cover-field{
+  display:flex;flex-direction:column;gap:3px;
+  font-size:12px;
+}
+.cover-field label{
+  font-size:9.5px;text-transform:uppercase;
+  letter-spacing:1.5px;color:var(--muted);
+  font-weight:600;
+}
+.cover-field .value{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:15px;color:var(--ink);
+  font-weight:500;
+}
+.cover-session{
+  margin-top:6px;
+  padding-top:10px;
+  border-top:1px solid var(--rule);
+  font-size:12px;
+  letter-spacing:1.5px;
+  color:var(--gold);font-weight:500;
+  text-transform:uppercase;
+}
+
+/* ============ CERTIFICATE ============ */
+.cert-frame{
+  border:2px double var(--gold);
+  padding:28px 26px;
+  margin-top:8px;
+  border-radius:3px;
+  position:relative;
+  background:linear-gradient(180deg,#fffdf5 0%,#fdfcf8 100%);
+  height:calc(100% - 100px);
+  display:flex;flex-direction:column;
+  justify-content:center;
+}
+.cert-frame::before{
+  content:'';position:absolute;
+  inset:8px;
+  border:1px solid var(--gold);
+  opacity:.35;
+  border-radius:1px;
+  pointer-events:none;
+}
+.cert-title{
+  font-family:'Fraunces',Georgia,serif;
+  text-align:center;
+  font-size:32px;font-weight:700;
+  color:var(--ink);
+  letter-spacing:4px;
+  margin-bottom:4px;
+  position:relative;
+}
+.cert-sub{
+  text-align:center;
+  font-size:10px;letter-spacing:2px;
+  color:var(--gold);text-transform:uppercase;
+  margin-bottom:20px;font-weight:600;
+}
+.cert-body p{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:13px;line-height:1.9;
+  color:var(--ink-2);text-align:justify;
+  text-justify:inter-word;
+  margin-bottom:12px;
+}
+.cert-signs{
+  display:flex;justify-content:space-between;
+  margin-top:28px;gap:10px;
+}
+.cert-sign{text-align:center;flex:1}
+.cert-sign .line{
+  border-top:1px solid var(--ink-2);
+  margin:0 8px 4px;padding-top:3px;
+}
+.cert-sign .label{
+  font-size:10px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1px;
+  font-weight:500;
+}
+
+/* ============ INDEX TABLE ============ */
+.index-table{font-size:11px}
+.index-table td:first-child{
+  width:44px;text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--gold);font-weight:500;
+}
+.index-table td:last-child{
+  width:50px;text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--ink);font-weight:500;
+}
+.index-table td:nth-child(2){padding-left:14px}
+.index-table tr.section-row td{
+  background:var(--paper-tint) !important;
+  font-weight:600;color:var(--ink);
+  font-size:9.5px;text-transform:uppercase;
+  letter-spacing:1.5px;padding:5px 10px;
+  border-top:2px solid var(--gold);
+}
+
+/* ============ EDITAABLE ============ */
+[contenteditable="true"]{
+  outline:none;
+  border-bottom:1px dashed rgba(184,134,11,0.4);
+  min-width:40px;display:inline-block;
+  padding:0 3px;
+  transition:background .15s;
+}
+[contenteditable="true"]:focus{
+  background:#fffde7;
+  border-bottom-color:var(--gold);
+}
+
+/* ============ SIGNATURE ROW ============ */
+.signature-row{
+  display:flex;justify-content:space-between;
+  margin-top:30px;gap:20px;
+}
+.signature-line{
+  border-top:1px solid var(--ink-2);
+  padding-top:5px;
+  min-width:110px;text-align:center;
+  font-size:10.5px;color:var(--muted);
+  letter-spacing:0.5px;
+}
+
+/* ============ PRINT ============ */
+@media print{
+  body{background:#fff;overflow:visible;height:auto}
+  #app{display:block;height:auto}
+  #sidebar,#toolbar{display:none!important}
+  #main{display:block;overflow:visible}
+  #viewer{display:block;overflow:visible;padding:0;background:#fff}
+  #pages-container{display:block;gap:0;transform:none!important}
+  .page{
+    width:210mm;height:297mm;margin:0;
+    box-shadow:none;border:none;
+    page-break-after:always;break-after:page;
+    overflow:hidden;
+  }
+  .page:last-child{page-break-after:avoid;break-after:avoid}
+  .page.hidden-page{display:flex!important}
+  @page{size:A4 portrait;margin:0}
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:900px){
+  #sidebar{position:fixed;top:0;left:0;bottom:0}
+  #sidebar.hidden{transform:translateX(-100%)}
+  #toolbar{padding:0 6px}
+  #toolbar button{padding:6px 8px;font-size:11px}
+  #viewer{padding:12px}
+}
+
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#c5bda8;border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div id="app">
+
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <h1>Physical <span>Education</span></h1>
+    <p>Class XII · Practical File</p>
+  </div>
+  <div class="page-list" id="pageList"></div>
+</nav>
+
+<div id="main">
+  <div id="toolbar">
+    <button id="toggleSidebar" title="Toggle sidebar">☰</button>
+    <button id="prevBtn">◀ Prev</button>
+    <button id="nextBtn">Next ▶</button>
+    <span id="page-indicator">Page 1 of 28</span>
+    <span class="spacer"></span>
+    <button id="zoomOut">−</button>
+    <span id="zoom-label">100%</span>
+    <button id="zoomIn">+</button>
+    <button id="fitBtn">Fit</button>
+    <button id="fullBtn">⛶</button>
+    <button id="printPageBtn">🖨 Page</button>
+    <button id="printAllBtn" class="primary">🖨 All</button>
+  </div>
+
+  <div id="viewer">
+    <div id="pages-container">
+
+    <!-- ================= PAGE 1: COVER ================= -->
+    <section class="page" data-page="1" data-section="front">
+      <div class="cover-frame"></div>
+      <div class="cover-inner">
+        <div class="cover-emblem">
+          <svg width="72" height="72" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="#b8860b" stroke-width="1.5"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#b8860b" stroke-width="0.7" opacity="0.6"/>
+            <path d="M50 22 Q38 40 32 62 Q42 56 50 68 Q58 56 68 62 Q62 40 50 22Z" fill="#b8860b" opacity="0.12" stroke="#b8860b" stroke-width="1"/>
+            <text x="50" y="56" text-anchor="middle" font-size="16" font-weight="700" fill="#14213d" font-family="Georgia,serif" letter-spacing="1">PE</text>
+          </svg>
+        </div>
+        <div class="cover-school" contenteditable="true">SRI CHAITANYA SCHOOL</div>
+        <div class="cover-affil">Affiliated to CBSE · New Delhi</div>
+        <div class="cover-divider">
+          <div class="line"></div><div class="dot"></div><div class="line"></div>
+        </div>
+        <div class="cover-type">Physical Education</div>
+        <div class="cover-title">Practical <em>File</em></div>
+        <div class="cover-class">Class XII · Commerce</div>
+
+        <div class="cover-info">
+          <div class="cover-field">
+            <label>Submitted by</label>
+            <div class="value" contenteditable="true">Abhinav &amp;</div>
+          </div>
+          <div class="cover-field">
+            <label>Roll Number</label>
+            <div class="value" contenteditable="true">__________</div>
+          </div>
+          <div class="cover-field">
+            <label>Subject Teacher</label>
+            <div class="value" contenteditable="true">Mr. / Ms. ________________</div>
+          </div>
+        </div>
+
+        <div class="cover-session">
+          Academic Session · <span contenteditable="true">2026–27</span>
+        </div>
+      </div>
+      <div class="page-footer">01</div>
+    </section>
+
+    <!-- ================= PAGE 2: ACKNOWLEDGEMENT ================= -->
+    <section class="page" data-page="2" data-section="front">
+      <header class="page-header">
+        <span class="section-tag">Front Matter</span>
+        <h2>Acknowledgement <span class="h2-sub">With sincere gratitude</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <p>I would like to sincerely thank my Physical Education teacher, <strong contenteditable="true">Mr. / Ms. ________________</strong>, for guiding me throughout this project. Their patience, suggestions and constant encouragement helped me complete this file with confidence.</p>
+
+      <p>I am grateful to the Principal and staff of <strong contenteditable="true">Sri Chaitanya School</strong> for giving me the facilities and the supportive environment needed to prepare this practical file.</p>
+
+      <p>My heartfelt thanks go to my parents and to my project partner <strong contenteditable="true">Deepak</strong>, whose support, honest feedback and cooperation made this work easier and more enjoyable.</p>
+
+      <p>Finally, I acknowledge the official sources — CBSE, NCERT, the Sports Authority of India, Khelo India and the Badminton World Federation — whose published material helped me keep the facts in this file accurate.</p>
+
+      <div class="signature-row">
+        <div class="signature-line">Student Signature</div>
+        <div class="signature-line">Date</div>
+      </div>
+      <div class="page-footer">02</div>
+    </section>
+
+    <!-- ================= PAGE 3: CERTIFICATE ================= -->
+    <section class="page" data-page="3" data-section="front">
+      <header class="page-header">
+        <span class="section-tag">Front Matter</span>
+        <h2>Certificate</h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <div class="cert-frame">
+        <div class="cert-title">CERTIFICATE</div>
+        <div class="cert-sub">of Completion</div>
+
+        <div class="cert-body">
+          <p>This is to certify that <strong contenteditable="true">Abhinav</strong> and <strong contenteditable="true">Deepak</strong>, students of Class <strong>XII Commerce</strong>, have successfully completed their Physical Education Practical File on the topics <strong>Yoga for Lifestyle Diseases</strong>, <strong>SAI Khelo India Fitness Test</strong> and <strong>Badminton</strong>.</p>
+          <p>The work was carried out under the guidance of <strong contenteditable="true">Mr. / Ms. ________________</strong> during the academic session <strong contenteditable="true">2026–27</strong>, as part of the CBSE Class XII Physical Education curriculum. The work is original and has been completed with sincerity.</p>
+        </div>
+
+        <div class="cert-signs">
+          <div class="cert-sign"><div class="line"></div><div class="label">Subject Teacher</div></div>
+          <div class="cert-sign"><div class="line"></div><div class="label">Principal</div></div>
+          <div class="cert-sign"><div class="line"></div><div class="label">Examiner</div></div>
+        </div>
+        <div class="cert-signs" style="margin-top:14px">
+          <div class="cert-sign"><div class="line"></div><div class="label">School Seal</div></div>
+          <div class="cert-sign"><div class="line"></div><div class="label">Date</div></div>
+        </div>
+      </div>
+      <div class="page-footer">03</div>
+    </section>
+
+    <!-- ================= PAGE 4: INDEX ================= -->
+    <section class="page" data-page="4" data-section="front">
+      <header class="page-header">
+        <span class="section-tag">Front Matter</span>
+        <h2>Contents <span class="h2-sub">Index of the practical file</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <table class="index-table">
+        <thead><tr><th>No.</th><th>Topic</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Cover Page</td><td>1</td></tr>
+          <tr><td>2</td><td>Acknowledgement</td><td>2</td></tr>
+          <tr><td>3</td><td>Certificate</td><td>3</td></tr>
+          <tr><td>4</td><td>Contents</td><td>4</td></tr>
+          <tr class="section-row"><td colspan="3">Section 01 · Yoga for Lifestyle Diseases</td></tr>
+          <tr><td>5</td><td>Introduction to Yoga</td><td>5</td></tr>
+          <tr><td>6</td><td>Lifestyle Diseases and Yoga</td><td>6</td></tr>
+          <tr><td>7</td><td>Tadasana</td><td>7</td></tr>
+          <tr><td>8</td><td>Katichakrasana</td><td>8</td></tr>
+          <tr><td>9</td><td>More Asanas · Part I</td><td>9</td></tr>
+          <tr><td>10</td><td>More Asanas · Part II</td><td>10</td></tr>
+          <tr><td>11</td><td>General Benefits and Precautions</td><td>11</td></tr>
+          <tr><td>12</td><td>Yoga · Summary &amp; Viva</td><td>12</td></tr>
+          <tr class="section-row"><td colspan="3">Section 02 · SAI Khelo India Fitness Test</td></tr>
+          <tr><td>13</td><td>Introduction to SAI Khelo India</td><td>13</td></tr>
+          <tr><td>14</td><td>Components of Physical Fitness</td><td>14</td></tr>
+          <tr><td>15</td><td>Fitness Tests · Part 1</td><td>15</td></tr>
+          <tr><td>16</td><td>Fitness Tests · Part 2</td><td>16</td></tr>
+          <tr><td>17</td><td>Fitness Tests · Part 3</td><td>17</td></tr>
+          <tr><td>18</td><td>Equipment, Scoring and Assessment</td><td>18</td></tr>
+          <tr><td>19</td><td>Importance of Fitness Testing</td><td>19</td></tr>
+          <tr class="section-row"><td colspan="3">Section 03 · Badminton</td></tr>
+          <tr><td>20</td><td>Introduction to Badminton</td><td>20</td></tr>
+          <tr><td>21</td><td>History and Equipment</td><td>21</td></tr>
+          <tr><td>22</td><td>Court Diagram and Dimensions</td><td>22</td></tr>
+          <tr><td>23</td><td>Rules and Regulations</td><td>23</td></tr>
+          <tr><td>24</td><td>Basic Skills and Techniques</td><td>24</td></tr>
+          <tr><td>25</td><td>Serving and Playing Techniques</td><td>25</td></tr>
+          <tr><td>26</td><td>Important Terminology</td><td>26</td></tr>
+          <tr class="section-row"><td colspan="3">Closing</td></tr>
+          <tr><td>27</td><td>Conclusion</td><td>27</td></tr>
+          <tr><td>28</td><td>Bibliography</td><td>28</td></tr>
+        </tbody>
+      </table>
+      <div class="page-footer">04</div>
+    </section>
+
+    <!-- ================= PAGE 5: YOGA INTRO ================= -->
+    <section class="page" data-page="5" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>Introduction to Yoga <span class="h2-sub">What it is and why we practise it</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>What is Yoga?</h3>
+      <p>Yoga is an ancient Indian practice that brings the <strong>body, mind and breath</strong> together. The word <em>yoga</em> comes from the Sanskrit word <em>yuj</em>, which means "to join" or "to unite". Regular practice makes us stronger, calmer and more focused.</p>
+
+      <h3>The three main parts of yoga</h3>
+      <ul>
+        <li><strong>Asana</strong> — physical postures such as Tadasana or Bhujangasana.</li>
+        <li><strong>Pranayama</strong> — breathing exercises such as Anulom Vilom.</li>
+        <li><strong>Dhyana</strong> — meditation and relaxation of the mind.</li>
+      </ul>
+
+      <h3>Why is yoga useful for a student?</h3>
+      <ul>
+        <li>Improves body posture and flexibility.</li>
+        <li>Reduces stress and helps concentrate during exams.</li>
+        <li>Builds strength without heavy equipment.</li>
+        <li>Helps prevent lifestyle diseases like obesity and diabetes.</li>
+      </ul>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is yoga?</dt>
+          <dd>An ancient Indian practice that joins the body, mind and breath through postures and breathing exercises.</dd>
+          <dt>What is an asana?</dt>
+          <dd>A steady, comfortable physical posture held for some time.</dd>
+          <dt>What is pranayama?</dt>
+          <dd>Control of breathing — slow, deep and rhythmic breathing exercises.</dd>
+        </dl>
+      </div>
+
+      <div class="page-footer">05</div>
+    </section>
+
+    <!-- ================= PAGE 6: LIFESTYLE DISEASES ================= -->
+    <section class="page" data-page="6" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>Lifestyle Diseases and Yoga <span class="h2-sub">How yoga helps each condition</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <p>A <strong>lifestyle disease</strong> is a disease caused mainly by our daily habits — not by infection. Sitting for long hours, eating junk food, poor sleep and stress are common causes.</p>
+
+      <h3>Prescribed asanas by disease (CBSE Class XII syllabus)</h3>
+      <table>
+        <thead><tr><th>Disease</th><th>Relevant Asanas</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Obesity</strong></td><td>Tadasana, Katichakrasana, Pavanmuktasana, Bhujangasana, Dhanurasana, Ushtrasana</td></tr>
+          <tr><td><strong>Diabetes</strong></td><td>Katichakrasana, Pavanmuktasana, Bhujangasana, Paschimottanasana, Ardha Matsyendrasana, Gomukhasana</td></tr>
+          <tr><td><strong>Asthma</strong></td><td>Tadasana, Bhujangasana, Dhanurasana, Ushtrasana, Anulom Vilom</td></tr>
+          <tr><td><strong>Hypertension</strong></td><td>Tadasana, Katichakrasana, Bhujangasana, Shavasana, Anulom Vilom</td></tr>
+          <tr><td><strong>Back Pain &amp; Arthritis</strong></td><td>Tadasana, Katichakrasana, Ushtrasana, Gomukhasana, Shavasana</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-card green">
+        <div class="card-head">Practical Requirement</div>
+        The file must show at least <strong>two asanas for each lifestyle disease</strong>, with procedure, benefits and precautions. Pages 7–10 cover the most useful ones in detail.
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is a lifestyle disease?</dt>
+          <dd>A disease caused mainly by daily habits such as diet, activity level, sleep and stress — not by infection.</dd>
+          <dt>Give two examples.</dt>
+          <dd>Obesity and Type 2 diabetes.</dd>
+          <dt>Which asana is commonly suggested for obesity?</dt>
+          <dd>Tadasana and Katichakrasana are commonly suggested.</dd>
+        </dl>
+      </div>
+
+      <div class="page-footer">06</div>
+    </section>
+
+    <!-- ================= PAGE 7: TADASANA ================= -->
+    <section class="page" data-page="7" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>Tadasana <span class="h2-sub">The Mountain Pose</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <div class="facts">
+        <div class="fact"><span class="fact-label">Helps with</span><span class="fact-value">Obesity · Asthma · Hypertension · Back Pain</span></div>
+        <div class="fact"><span class="fact-label">Type</span><span class="fact-value">Standing · Beginner</span></div>
+      </div>
+
+      <div class="diagram">
+        <svg width="180" height="200" viewBox="0 0 200 220">
+          <line x1="30" y1="200" x2="170" y2="200" stroke="#b8a888" stroke-width="1.5"/>
+          <circle cx="100" cy="35" r="14" fill="none" stroke="#14213d" stroke-width="2"/>
+          <line x1="100" y1="49" x2="100" y2="130" stroke="#14213d" stroke-width="2"/>
+          <line x1="100" y1="65" x2="60" y2="20" stroke="#14213d" stroke-width="2"/>
+          <line x1="100" y1="65" x2="140" y2="20" stroke="#14213d" stroke-width="2"/>
+          <line x1="100" y1="130" x2="80" y2="198" stroke="#14213d" stroke-width="2"/>
+          <line x1="100" y1="130" x2="120" y2="198" stroke="#14213d" stroke-width="2"/>
+          <line x1="80" y1="198" x2="72" y2="192" stroke="#14213d" stroke-width="2"/>
+          <line x1="120" y1="198" x2="128" y2="192" stroke="#14213d" stroke-width="2"/>
+          <text x="150" y="30" font-size="9" fill="#8b1e3f">Arms up</text>
+          <line x1="140" y1="25" x2="155" y2="28" stroke="#8b1e3f" stroke-width="0.8"/>
+          <text x="150" y="90" font-size="9" fill="#8b1e3f">Straight spine</text>
+          <line x1="102" y1="90" x2="155" y2="85" stroke="#8b1e3f" stroke-width="0.8"/>
+          <text x="18" y="190" font-size="9" fill="#8b1e3f">On toes</text>
+          <line x1="72" y1="192" x2="42" y2="188" stroke="#8b1e3f" stroke-width="0.8"/>
+        </svg>
+      </div>
+      <div class="caption">Fig. 1 — Tadasana, final position</div>
+
+      <h3>How to do it</h3>
+      <ol class="steps">
+        <li>Stand straight with feet together and hands by your sides.</li>
+        <li>Interlock your fingers and turn the palms upward.</li>
+        <li>Breathe in and stretch both arms above your head.</li>
+        <li>Slowly raise your heels and balance on your toes.</li>
+        <li>Stretch your whole body upward and hold for 5–10 seconds.</li>
+        <li>Breathe out, bring your heels down, and relax.</li>
+      </ol>
+
+      <div class="two-col">
+        <div class="info-card green">
+          <div class="card-head">Benefits</div>
+          <ul style="padding-left:16px;margin:0">
+            <li>Improves posture and body alignment.</li>
+            <li>Strengthens thighs, knees and ankles.</li>
+            <li>Improves balance and body awareness.</li>
+          </ul>
+        </div>
+        <div class="info-card red">
+          <div class="card-head">Precautions</div>
+          <ul style="padding-left:16px;margin:0">
+            <li>Avoid if you have vertigo or low BP.</li>
+            <li>Do not hold the breath for too long.</li>
+            <li>Keep the spine straight, not bent.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>Why is Tadasana called the Mountain Pose?</dt>
+          <dd>Because in the final position the body is tall, still and firm like a mountain.</dd>
+          <dt>Which muscles are mainly used?</dt>
+          <dd>Thighs, calves, ankles, back and shoulder muscles.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">07</div>
+    </section>
+
+    <!-- ================= PAGE 8: KATICHakrasana ================= -->
+    <section class="page" data-page="8" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>Katichakrasana <span class="h2-sub">The Waist Twisting Pose</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <div class="facts">
+        <div class="fact"><span class="fact-label">Helps with</span><span class="fact-value">Obesity · Diabetes · Hypertension · Back Pain</span></div>
+        <div class="fact"><span class="fact-label">Type</span><span class="fact-value">Standing twist · Beginner</span></div>
+      </div>
+
+      <div class="diagram">
+        <svg width="180" height="160" viewBox="0 0 220 200">
+          <line x1="30" y1="180" x2="190" y2="180" stroke="#b8a888" stroke-width="1.5"/>
+          <circle cx="110" cy="40" r="13" fill="none" stroke="#14213d" stroke-width="2"/>
+          <line x1="110" y1="53" x2="110" y2="110" stroke="#14213d" stroke-width="2"/>
+          <line x1="110" y1="70" x2="170" y2="55" stroke="#14213d" stroke-width="2"/>
+          <line x1="110" y1="70" x2="150" y2="95" stroke="#14213d" stroke-width="2"/>
+          <line x1="110" y1="110" x2="85" y2="178" stroke="#14213d" stroke-width="2"/>
+          <line x1="110" y1="110" x2="135" y2="178" stroke="#14213d" stroke-width="2"/>
+          <path d="M150,50 Q180,70 160,100" fill="none" stroke="#8b1e3f" stroke-width="1.5" marker-end="url(#ar1)"/>
+          <defs><marker id="ar1" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L6,2.5 L0,5" fill="#8b1e3f"/></marker></defs>
+          <text x="168" y="45" font-size="9" fill="#8b1e3f">Twist</text>
+        </svg>
+      </div>
+      <div class="caption">Fig. 2 — Katichakrasana, twisting to the right</div>
+
+      <h3>How to do it</h3>
+      <ol class="steps">
+        <li>Stand erect with your feet about 30 cm apart.</li>
+        <li>Raise both arms to shoulder level, palms facing each other.</li>
+        <li>Breathe in and swing both arms to the right.</li>
+        <li>Twist your waist to the right. Keep the right arm straight and bend the left arm.</li>
+        <li>Look towards your right hand and hold for a few seconds.</li>
+        <li>Come back to the centre, then repeat on the left side.</li>
+      </ol>
+
+      <div class="two-col">
+        <div class="info-card green">
+          <div class="card-head">Benefits</div>
+          <ul style="padding-left:16px;margin:0">
+            <li>Improves spinal flexibility and mobility.</li>
+            <li>Relieves stiffness in the lower back.</li>
+            <li>Strengthens lumbar region and shoulders.</li>
+          </ul>
+        </div>
+        <div class="info-card red">
+          <div class="card-head">Precautions</div>
+          <ul style="padding-left:16px;margin:0">
+            <li>Avoid with chronic spinal pain or injury.</li>
+            <li>Do not twist forcefully — move slowly.</li>
+            <li>Keep the knees slightly relaxed.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What does Katichakrasana mainly work on?</dt>
+          <dd>The waist (kati) and the lower back. It improves spinal flexibility.</dd>
+          <dt>Why should the movement be slow?</dt>
+          <dd>Because the spine is delicate. Slow movement prevents jerks and injuries.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">08</div>
+    </section>
+
+    <!-- ================= PAGE 9: MORE ASANAS I ================= -->
+    <section class="page" data-page="9" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>More Asanas · Part I <span class="h2-sub">Pavanmuktasana &amp; Bhujangasana</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <div class="asana-card">
+        <div class="asana-title">
+          <span class="asana-num">01</span>
+          <h4>Pavanmuktasana</h4>
+          <span class="asana-eng">Wind-Relieving Pose</span>
+        </div>
+        <div class="asana-grid">
+          <svg viewBox="0 0 220 120">
+            <line x1="20" y1="100" x2="200" y2="100" stroke="#b8a888" stroke-width="1.2"/>
+            <line x1="40" y1="90" x2="160" y2="90" stroke="#14213d" stroke-width="2"/>
+            <circle cx="175" cy="85" r="10" fill="none" stroke="#14213d" stroke-width="2"/>
+            <path d="M120,90 Q130,55 100,55" fill="none" stroke="#14213d" stroke-width="2"/>
+            <line x1="100" y1="55" x2="80" y2="90" stroke="#14213d" stroke-width="2"/>
+            <path d="M115,70 Q95,60 85,75" fill="none" stroke="#14213d" stroke-width="2"/>
+          </svg>
+          <div class="asana-info">
+            <p><strong>Good for:</strong> Obesity, Diabetes</p>
+            <p><strong>How:</strong> Lie on your back. Bring both knees to your chest and hold them with your hands. Lift your head and touch your knees with your chin. Hold 5–10 seconds, then release slowly.</p>
+            <p><strong>Benefits:</strong> Relieves gas and constipation, improves digestion, strengthens abdominal muscles.</p>
+            <p><strong>Care:</strong> Avoid after abdominal surgery, with hernia or during pregnancy.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="asana-card">
+        <div class="asana-title">
+          <span class="asana-num">02</span>
+          <h4>Bhujangasana</h4>
+          <span class="asana-eng">Cobra Pose</span>
+        </div>
+        <div class="asana-grid">
+          <svg viewBox="0 0 220 110">
+            <line x1="20" y1="95" x2="200" y2="95" stroke="#b8a888" stroke-width="1.2"/>
+            <line x1="40" y1="90" x2="120" y2="90" stroke="#14213d" stroke-width="2"/>
+            <path d="M120,90 Q140,50 160,45" fill="none" stroke="#14213d" stroke-width="2"/>
+            <circle cx="165" cy="38" r="10" fill="none" stroke="#14213d" stroke-width="2"/>
+            <line x1="145" y1="65" x2="140" y2="90" stroke="#14213d" stroke-width="2"/>
+          </svg>
+          <div class="asana-info">
+            <p><strong>Good for:</strong> Obesity, Diabetes, Asthma, Hypertension</p>
+            <p><strong>How:</strong> Lie on your stomach. Place palms beside your chest. Breathe in and lift your head and chest, keeping your navel on the floor. Hold 10–20 seconds, then lower slowly.</p>
+            <p><strong>Benefits:</strong> Strengthens the spine and arms, opens the chest, improves digestion.</p>
+            <p><strong>Care:</strong> Avoid with hernia, peptic ulcer, recent abdominal surgery or severe back injury.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>Why is Pavanmuktasana called the "wind-relieving" pose?</dt>
+          <dd>Because it helps release trapped gas from the digestive system.</dd>
+          <dt>Why is Bhujangasana good for the spine?</dt>
+          <dd>It bends the spine backward and strengthens the muscles that support it.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">09</div>
+    </section>
+
+    <!-- ================= PAGE 10: MORE ASANAS II ================= -->
+    <section class="page" data-page="10" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>More Asanas · Part II <span class="h2-sub">Paschimottanasana &amp; Gomukhasana</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <div class="asana-card">
+        <div class="asana-title">
+          <span class="asana-num">03</span>
+          <h4>Paschimottanasana</h4>
+          <span class="asana-eng">Seated Forward Bend</span>
+        </div>
+        <div class="asana-grid">
+          <svg viewBox="0 0 240 110">
+            <line x1="20" y1="90" x2="220" y2="90" stroke="#b8a888" stroke-width="1.2"/>
+            <line x1="60" y1="85" x2="160" y2="85" stroke="#14213d" stroke-width="2"/>
+            <circle cx="55" cy="65" r="10" fill="none" stroke="#14213d" stroke-width="2"/>
+            <line x1="65" y1="75" x2="140" y2="80" stroke="#14213d" stroke-width="2"/>
+            <line x1="100" y1="78" x2="175" y2="60" stroke="#14213d" stroke-width="2"/>
+          </svg>
+          <div class="asana-info">
+            <p><strong>Good for:</strong> Obesity, Diabetes</p>
+            <p><strong>How:</strong> Sit with legs straight. Breathe in and raise your arms. Breathe out and bend forward from the hips, reaching towards your toes. Hold 10–20 seconds, then sit up slowly.</p>
+            <p><strong>Benefits:</strong> Stretches the spine and hamstrings, improves digestion, helpful in diabetes management.</p>
+            <p><strong>Care:</strong> Avoid with severe back pain, sciatica or recent abdominal surgery. Do not bounce while bending.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="asana-card">
+        <div class="asana-title">
+          <span class="asana-num">04</span>
+          <h4>Gomukhasana</h4>
+          <span class="asana-eng">Cow Face Pose</span>
+        </div>
+        <div class="asana-grid">
+          <svg viewBox="0 0 200 130">
+            <line x1="20" y1="115" x2="180" y2="115" stroke="#b8a888" stroke-width="1.2"/>
+            <circle cx="100" cy="35" r="12" fill="none" stroke="#14213d" stroke-width="2"/>
+            <line x1="100" y1="47" x2="100" y2="90" stroke="#14213d" stroke-width="2"/>
+            <line x1="100" y1="65" x2="70" y2="45" stroke="#14213d" stroke-width="2"/>
+            <line x1="100" y1="65" x2="130" y2="80" stroke="#14213d" stroke-width="2"/>
+            <path d="M70,45 Q55,55 65,75" fill="none" stroke="#14213d" stroke-width="2"/>
+            <path d="M130,80 Q145,90 155,75" fill="none" stroke="#14213d" stroke-width="2"/>
+            <line x1="85" y1="90" x2="70" y2="112" stroke="#14213d" stroke-width="2"/>
+            <line x1="115" y1="90" x2="130" y2="112" stroke="#14213d" stroke-width="2"/>
+          </svg>
+          <div class="asana-info">
+            <p><strong>Good for:</strong> Diabetes, Hypertension, Back Pain</p>
+            <p><strong>How:</strong> Sit with legs crossed. Bring the right arm over the right shoulder and the left arm behind the back, clasping fingers if possible. Hold 10–15 seconds, then change sides.</p>
+            <p><strong>Benefits:</strong> Stretches shoulders, chest and back; improves posture; relieves mild back stiffness.</p>
+            <p><strong>Care:</strong> Avoid with severe shoulder, neck or back injury. Do not force the clasp.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is Paschimottanasana mainly used for?</dt>
+          <dd>To stretch the back and hamstrings, and to help with digestion and diabetes.</dd>
+          <dt>Which body parts does Gomukhasana stretch?</dt>
+          <dd>Shoulders, chest, upper back and hips.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">10</div>
+    </section>
+
+    <!-- ================= PAGE 11: BENEFITS & PRECAUTIONS ================= -->
+    <section class="page" data-page="11" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>General Benefits and Precautions <span class="h2-sub">Safe practice for everyone</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>General benefits of yoga</h3>
+      <div class="two-col">
+        <div class="info-card green">
+          <div class="card-head">Physical</div>
+          <ul style="padding-left:16px;margin:0">
+            <li>Improves flexibility and joint mobility.</li>
+            <li>Builds strength and endurance.</li>
+            <li>Improves balance and posture.</li>
+            <li>Helps digestion and metabolism.</li>
+          </ul>
+        </div>
+        <div class="info-card blue">
+          <div class="card-head">Mental</div>
+          <ul style="padding-left:16px;margin:0">
+            <li>Reduces stress and anxiety.</li>
+            <li>Improves concentration and memory.</li>
+            <li>Helps emotional balance.</li>
+            <li>Improves quality of sleep.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>General precautions</h3>
+      <ul>
+        <li>Practise on an empty stomach, or at least 2–3 hours after a meal.</li>
+        <li>Wear loose, comfortable clothes.</li>
+        <li>Move slowly and stay within your comfort zone.</li>
+        <li>Avoid jerky movements and forceful stretching.</li>
+        <li>Consult a doctor first if you have any medical condition.</li>
+        <li>Practise on a non-slip surface.</li>
+        <li>Warm up before and relax after a session.</li>
+      </ul>
+
+      <div class="info-card red">
+        <div class="card-head">Important</div>
+        Pregnant women, people who have had recent surgery, and people with chronic illness should practise yoga only under a trained teacher's supervision.
+      </div>
+
+      <div class="page-footer">11</div>
+    </section>
+
+    <!-- ================= PAGE 12: YOGA SUMMARY ================= -->
+    <section class="page" data-page="12" data-section="yoga">
+      <header class="page-header">
+        <span class="section-tag">Section 01 · Yoga</span>
+        <h2>Yoga Summary <span class="h2-sub">Recap and common viva questions</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>What we covered in this section</h3>
+      <ul>
+        <li>Yoga joins the body, mind and breath through <strong>asana, pranayama and dhyana</strong>.</li>
+        <li>The five lifestyle diseases in the CBSE syllabus are <strong>Obesity, Diabetes, Asthma, Hypertension, and Back Pain &amp; Arthritis</strong>.</li>
+        <li>Each disease has at least two suitable asanas — for example, Tadasana and Katichakrasana for obesity.</li>
+        <li>Regular practice improves both physical health and mental calmness.</li>
+      </ul>
+
+      <h3>Common mistakes to avoid</h3>
+      <ul>
+        <li>Holding your breath for too long in a pose.</li>
+        <li>Practising immediately after a heavy meal.</li>
+        <li>Forcing a stretch beyond your comfort level.</li>
+        <li>Holding an incorrect posture for a long time.</li>
+      </ul>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>Can yoga replace medical treatment?</dt>
+          <dd>No. Yoga supports health but does not replace a doctor's treatment.</dd>
+          <dt>What is the best time to practise yoga?</dt>
+          <dd>Early morning, on an empty stomach, is generally recommended.</dd>
+          <dt>Why is Shavasana important?</dt>
+          <dd>It relaxes the body and mind after the asanas and helps reduce stress.</dd>
+          <dt>How is yoga different from exercise?</dt>
+          <dd>Exercise mainly works the body; yoga works on the body, breath and mind together.</dd>
+        </dl>
+      </div>
+
+      <div class="page-footer">12</div>
+    </section>
+
+    <!-- ================= PAGE 13: KHELO INTRO ================= -->
+    <section class="page" data-page="13" data-section="fitness">
+      <header class="page-header">
+        <span class="section-tag">Section 02 · Khelo India</span>
+        <h2>SAI Khelo India Fitness Test <span class="h2-sub">What it is and why it matters</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>What is it?</h3>
+      <p>The <strong>SAI Khelo India Fitness Test</strong> is a nationwide fitness assessment for school students, run by the Sports Authority of India (SAI). It checks the fitness level of each student using standard, age-appropriate tests.</p>
+
+      <h3>Why is it done?</h3>
+      <ul>
+        <li>To find out a student's fitness strengths and weaknesses.</li>
+        <li>To encourage daily physical activity.</li>
+        <li>To give schools and parents clear fitness data.</li>
+        <li>To spot students with talent for sports.</li>
+      </ul>
+
+      <h3>Two age-group batteries</h3>
+      <p>The Khelo India test uses <strong>different tests for different age groups</strong>. This separation is required by CBSE:</p>
+      <table>
+        <thead><tr><th>Age group</th><th>Classes</th><th>Tests included</th></tr></thead>
+        <tbody>
+          <tr><td>5–8 years</td><td>I–III</td><td>BMI, Flamingo Balance, Plate Tapping</td></tr>
+          <tr><td>9–18 years</td><td>IV–XII</td><td>BMI, 50 m Dash, 600 m Run/Walk, Sit &amp; Reach, Partial Curl-Up, Push-Ups (Boys) / Modified Push-Ups (Girls)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-card red">
+        <div class="card-head">Note</div>
+        Flamingo Balance and Plate Tapping are <strong>only for Classes I–III</strong>. They are not part of the Class IV–XII battery. For Class XII, focus on the six tests in the 9–18 group.
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>Who conducts the Khelo India Fitness Test?</dt>
+          <dd>The Sports Authority of India (SAI), under the Khelo India mission.</dd>
+          <dt>How many tests are in the Class IV–XII battery?</dt>
+          <dd>Six — BMI, 50 m Dash, 600 m Run/Walk, Sit &amp; Reach, Partial Curl-Up, Push-Ups.</dd>
+          <dt>Why is fitness testing important?</dt>
+          <dd>It helps students know their fitness level and motivates them to improve.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">13</div>
+    </section>
+
+    <!-- ================= PAGE 14: COMPONENTS ================= -->
+    <section class="page" data-page="14" data-section="fitness">
+      <header class="page-header">
+        <span class="section-tag">Section 02 · Khelo India</span>
+        <h2>Components of Physical Fitness <span class="h2-sub">What each test actually measures</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <p>For Classes IV–XII (ages 9–18) the test measures six health-related fitness components:</p>
+
+      <table>
+        <thead><tr><th>Component</th><th>Test</th><th>What it measures</th></tr></thead>
+        <tbody>
+          <tr><td>Body Composition</td><td>BMI</td><td>Weight relative to height. BMI is only an indicator — it does <strong>not</strong> measure body fat directly.</td></tr>
+          <tr><td>Speed</td><td>50 m Dash</td><td>How fast a student can accelerate and sprint.</td></tr>
+          <tr><td>Cardiovascular Endurance</td><td>600 m Run/Walk</td><td>How well the heart and lungs supply oxygen during activity.</td></tr>
+          <tr><td>Flexibility</td><td>Sit and Reach</td><td>Flexibility of the lower back and hamstrings.</td></tr>
+          <tr><td>Abdominal Strength</td><td>Partial Curl-Up</td><td>Strength and endurance of the tummy (core) muscles.</td></tr>
+          <tr><td>Upper Body Strength</td><td>Push-Ups</td><td>Strength endurance of arms, chest and shoulders.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-card blue">
+        <div class="card-head">Note</div>
+        Plate Tapping (coordination) and Flamingo Balance (balance) belong to the Class I–III battery. They are not part of the Class IV–XII list.
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is body composition?</dt>
+          <dd>The relative amounts of fat and lean tissue in the body. BMI is one simple indicator of it.</dd>
+          <dt>What does the 600 m test measure?</dt>
+          <dd>Cardiovascular endurance — the ability of the heart and lungs to work for a longer time.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">14</div>
+    </section>
+
+    <!-- ================= PAGE 15: TESTS 1 ================= -->
+    <section class="page" data-page="15" data-section="fitness">
+      <header class="page-header">
+        <span class="section-tag">Section 02 · Khelo India</span>
+        <h2>Fitness Tests · Part 1 <span class="h2-sub">BMI · 50 m Dash · 600 m Run/Walk</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>1. Body Mass Index (BMI)</h3>
+      <p><strong>Measures:</strong> Weight relative to height. BMI is a screening indicator — it does <em>not</em> directly measure body fat.</p>
+      <p><strong>Equipment:</strong> Weighing machine, stadiometer or measuring tape.</p>
+      <p><strong>Procedure:</strong> Measure height (no shoes) to nearest 0.1 cm and weight to nearest 0.1 kg. Calculate:</p>
+      <div class="info-card tint" style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px">
+        BMI = Weight (kg) ÷ [Height (m)]<sup>2</sup>
+      </div>
+      <p><strong>Scoring:</strong> Record the BMI value; compare it with age- and gender-specific reference charts.</p>
+
+      <h3>2. 50 m Dash</h3>
+      <p><strong>Measures:</strong> Acceleration and speed.</p>
+      <p><strong>Equipment:</strong> Stopwatch, cones, a marked 50 m track.</p>
+      <p><strong>Procedure:</strong> On the start signal, sprint 50 m as fast as possible. Time from the signal until the chest crosses the finish line.</p>
+      <p><strong>Scoring:</strong> Time in seconds (nearest 0.1 s).</p>
+
+      <h3>3. 600 m Run/Walk</h3>
+      <p><strong>Measures:</strong> Cardiovascular endurance.</p>
+      <p><strong>Equipment:</strong> Stopwatch, cones, marked 200 m or 400 m track.</p>
+      <p><strong>Procedure:</strong> Run or walk 600 m as fast as possible. Walking is allowed, but the goal is the shortest possible time.</p>
+      <p><strong>Scoring:</strong> Time in minutes and seconds.</p>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>Does BMI measure body fat?</dt>
+          <dd>No. BMI is only an indicator based on height and weight. It does not tell you the exact body fat percentage.</dd>
+          <dt>Why is the 50 m dash used?</dt>
+          <dd>It is a short, quick test of speed and acceleration.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">15</div>
+    </section>
+
+    <!-- ================= PAGE 16: TESTS 2 ================= -->
+    <section class="page" data-page="16" data-section="fitness">
+      <header class="page-header">
+        <span class="section-tag">Section 02 · Khelo India</span>
+        <h2>Fitness Tests · Part 2 <span class="h2-sub">Sit &amp; Reach · Partial Curl-Up</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>4. Sit and Reach Test</h3>
+      <p><strong>Measures:</strong> Flexibility of the lower back and hamstring muscles.</p>
+      <p><strong>Equipment:</strong> Sit-and-reach box (scale with 23 cm mark at the foot line), mat.</p>
+      <p><strong>Procedure:</strong> Sit on the floor with legs straight and the soles of the feet against the box. Place one hand over the other, palms down. Reach forward slowly as far as possible. Hold 1–2 seconds.</p>
+      <p><strong>Scoring:</strong> Distance reached in cm and mm.</p>
+
+      <div class="diagram">
+        <svg width="220" height="90" viewBox="0 0 240 100">
+          <rect x="150" y="20" width="50" height="60" fill="#f7f3e8" stroke="#14213d" stroke-width="1.5"/>
+          <line x1="150" y1="50" x2="200" y2="50" stroke="#8b1e3f" stroke-width="1.5"/>
+          <text x="175" y="16" font-size="8" text-anchor="middle" fill="#14213d">Scale</text>
+          <line x1="50" y1="80" x2="140" y2="80" stroke="#14213d" stroke-width="2"/>
+          <circle cx="45" cy="55" r="10" fill="none" stroke="#14213d" stroke-width="2"/>
+          <line x1="55" y1="65" x2="120" y2="65" stroke="#14213d" stroke-width="2"/>
+          <line x1="90" y1="65" x2="145" y2="55" stroke="#14213d" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="caption">Fig. 3 — Sit and Reach Test</div>
+
+      <h3>5. Partial Curl-Up (30 seconds)</h3>
+      <p><strong>Measures:</strong> Abdominal muscular strength and endurance.</p>
+      <p><strong>Equipment:</strong> Mat, stopwatch, marking tape.</p>
+      <p><strong>Procedure:</strong> Lie on the back, knees bent at 90°, hands at the sides. Curl up at least 15 cm, then lower until the shoulder blades touch the floor. Do as many correct curl-ups as possible in 30 seconds.</p>
+      <p><strong>Scoring:</strong> Correct repetitions in 30 seconds.</p>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What does the sit-and-reach test measure?</dt>
+          <dd>Flexibility of the lower back and hamstrings.</dd>
+          <dt>Why is a partial curl-up used instead of a full sit-up?</dt>
+          <dd>The partial curl-up is safer for the lower back and still tests core strength well.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">16</div>
+    </section>
+
+    <!-- ================= PAGE 17: TESTS 3 ================= -->
+    <section class="page" data-page="17" data-section="fitness">
+      <header class="page-header">
+        <span class="section-tag">Section 02 · Khelo India</span>
+        <h2>Fitness Tests · Part 3 <span class="h2-sub">Push-Ups &amp; Tests Not for Class XII</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>6. Push-Ups (Boys) / Modified Push-Ups (Girls)</h3>
+      <p><strong>Measures:</strong> Upper body strength endurance and trunk stability.</p>
+      <p><strong>Equipment:</strong> Mat.</p>
+      <p><strong>Procedure (Boys):</strong> Start in a plank position, hands under the shoulders. Lower the body until the elbows reach 90°, then push back up. <strong>Girls:</strong> Perform the same movement with the knees on the ground.</p>
+      <p><strong>Scoring:</strong> Number of correctly performed push-ups until exhaustion.</p>
+
+      <h3>Tests that are <em>not</em> in the Class IV–XII battery</h3>
+      <table>
+        <thead><tr><th>Test</th><th>Correct age group</th><th>Why excluded from IV–XII</th></tr></thead>
+        <tbody>
+          <tr><td>Plate Tapping</td><td>Classes I–III</td><td>Measures coordination — only for younger children.</td></tr>
+          <tr><td>Flamingo Balance</td><td>Classes I–III</td><td>Measures static balance — only for younger children.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-card red">
+        <div class="card-head">Reminder</div>
+        If your school asks you to mention the Class I–III battery, put it in a separate, clearly labelled paragraph. Do not mix it with the Class IV–XII battery.
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>Why are modified push-ups used for girls?</dt>
+          <dd>They test upper body endurance with less body weight, making the test fair and safe.</dd>
+          <dt>Which test measures balance?</dt>
+          <dd>Flamingo Balance Test — but only for Classes I–III.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">17</div>
+    </section>
+
+    <!-- ================= PAGE 18: EQUIPMENT & SCORING ================= -->
+    <section class="page" data-page="18" data-section="fitness">
+      <header class="page-header">
+        <span class="section-tag">Section 02 · Khelo India</span>
+        <h2>Equipment, Scoring and Assessment <span class="h2-sub">How to record and use the results</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>Equipment summary (Class IV–XII)</h3>
+      <table>
+        <thead><tr><th>Test</th><th>Equipment</th></tr></thead>
+        <tbody>
+          <tr><td>BMI</td><td>Weighing machine, stadiometer or measuring tape</td></tr>
+          <tr><td>50 m Dash</td><td>Stopwatch, cones, marked track</td></tr>
+          <tr><td>600 m Run/Walk</td><td>Stopwatch, cones, marked 200 m or 400 m track</td></tr>
+          <tr><td>Sit and Reach</td><td>Sit-and-reach box, mat</td></tr>
+          <tr><td>Partial Curl-Up</td><td>Mat, stopwatch, marking tape</td></tr>
+          <tr><td>Push-Ups</td><td>Mat</td></tr>
+        </tbody>
+      </table>
+
+      <h3>How scoring works</h3>
+      <ul>
+        <li>Each test gives a <strong>raw score</strong> — time, count, distance, or BMI value.</li>
+        <li>These scores are entered in the <strong>Khelo India Fitness Assessment app or portal</strong>.</li>
+        <li>The portal compares the score with <strong>age- and gender-specific norms</strong>.</li>
+        <li>A fitness profile is created for each student.</li>
+      </ul>
+
+      <div class="info-card green">
+        <div class="card-head">Why it matters</div>
+        Schools use these results for internal assessment and to design activity programmes. The goal is <strong>improvement</strong>, not comparison between students.
+      </div>
+
+      <div class="page-footer">18</div>
+    </section>
+
+    <!-- ================= PAGE 19: IMPORTANCE ================= -->
+    <section class="page" data-page="19" data-section="fitness">
+      <header class="page-header">
+        <span class="section-tag">Section 02 · Khelo India</span>
+        <h2>Importance of Fitness Testing <span class="h2-sub">Why we measure fitness</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>Why fitness testing is useful</h3>
+      <ul>
+        <li><strong>Self-awareness:</strong> You know where you stand physically.</li>
+        <li><strong>Motivation:</strong> Real numbers encourage you to improve.</li>
+        <li><strong>Health monitoring:</strong> It catches early signs of obesity or low flexibility.</li>
+        <li><strong>Personalised training:</strong> Teachers can design activities based on needs.</li>
+        <li><strong>Talent spotting:</strong> Students with strong scores in specific components get noticed.</li>
+        <li><strong>Records:</strong> It tracks your fitness progress over years.</li>
+      </ul>
+
+      <h3>What we can learn from our own score</h3>
+      <ul>
+        <li>A low score is not a failure — it just shows which area needs work.</li>
+        <li>A high score in one test does not mean all-round fitness.</li>
+        <li>Fitness can always be improved with regular practice.</li>
+      </ul>
+
+      <div class="info-card blue">
+        <div class="card-head">Remember</div>
+        Fitness testing is a tool to help you improve, not a judgement about you.
+      </div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>Why should fitness testing be done regularly?</dt>
+          <dd>To track progress and find out if fitness is improving or falling.</dd>
+          <dt>Should students be compared with each other?</dt>
+          <dd>No. Each student should be compared with their own past performance and age-appropriate norms.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">19</div>
+    </section>
+
+    <!-- ================= PAGE 20: BADMINTON INTRO ================= -->
+    <section class="page" data-page="20" data-section="badminton">
+      <header class="page-header">
+        <span class="section-tag">Section 03 · Badminton</span>
+        <h2>Introduction to Badminton <span class="h2-sub">A fast, skilful racket sport</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>What is badminton?</h3>
+      <p>Badminton is a fast racket sport played by <strong>two players (singles)</strong> or <strong>two pairs (doubles)</strong>. Players hit a shuttlecock over a net. A point is scored when the shuttle lands in the opponent's court, or when the opponent makes a fault.</p>
+
+      <h3>Why is it popular?</h3>
+      <ul>
+        <li>It is one of the fastest racket sports in the world.</li>
+        <li>It builds speed, agility, endurance and coordination.</li>
+        <li>It can be played at any age — casually or competitively.</li>
+        <li>It has been an Olympic sport since 1992.</li>
+        <li>India has produced world-class players, which has boosted its popularity.</li>
+      </ul>
+
+      <div class="diagram">
+        <svg width="180" height="90" viewBox="0 0 200 100">
+          <ellipse cx="50" cy="40" rx="25" ry="30" fill="none" stroke="#14213d" stroke-width="2"/>
+          <line x1="50" y1="70" x2="50" y2="95" stroke="#14213d" stroke-width="2"/>
+          <line x1="30" y1="20" x2="70" y2="60" stroke="#b8860b" stroke-width="0.7" opacity="0.6"/>
+          <line x1="30" y1="30" x2="65" y2="70" stroke="#b8860b" stroke-width="0.7" opacity="0.6"/>
+          <line x1="70" y1="20" x2="35" y2="60" stroke="#b8860b" stroke-width="0.7" opacity="0.6"/>
+          <circle cx="150" cy="35" r="6" fill="#fdfcf8" stroke="#14213d" stroke-width="1.5"/>
+          <path d="M144,35 L135,50 M156,35 L165,50 M150,41 L150,55" stroke="#14213d" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div class="caption">Fig. 4 — Racket and shuttlecock</div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>How many players are there in a doubles match?</dt>
+          <dd>Two players on each side — four players in total.</dd>
+          <dt>What is the shuttlecock made of?</dt>
+          <dd>Traditionally 16 goose feathers fixed in a cork base. Synthetic shuttles are also common now.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">20</div>
+    </section>
+
+    <!-- ================= PAGE 21: HISTORY & EQUIPMENT ================= -->
+    <section class="page" data-page="21" data-section="badminton">
+      <header class="page-header">
+        <span class="section-tag">Section 03 · Badminton</span>
+        <h2>History and Equipment <span class="h2-sub">How the game evolved</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>Brief history</h3>
+      <p>Badminton grew from an old European game called <em>battledore and shuttlecock</em>. British officers in India in the 19th century played a version called <strong>Poona</strong>. The game was taken to England in the 1870s and was named after <strong>Badminton House</strong> in Gloucestershire. The Badminton World Federation (BWF) was formed in 1934, and badminton became an Olympic sport in 1992.</p>
+
+      <h3>Main equipment</h3>
+      <ul>
+        <li><strong>Racket:</strong> Light (usually 70–100 g), made of carbon fibre or light metal. It has a handle, shaft and stringed head.</li>
+        <li><strong>Shuttlecock:</strong> 16 feathers fixed in a cork base. Synthetic shuttles are cheaper and more durable.</li>
+        <li><strong>Net:</strong> 1.55 m high at the posts, 1.524 m at the centre.</li>
+        <li><strong>Court:</strong> Rectangular surface with lines marked for singles and doubles.</li>
+      </ul>
+
+      <div class="diagram">
+        <svg width="280" height="70" viewBox="0 0 300 80">
+          <rect x="30" y="15" width="6" height="60" fill="#8a7a5a"/>
+          <rect x="264" y="15" width="6" height="60" fill="#8a7a5a"/>
+          <path d="M36,20 Q150,38 264,20" fill="none" stroke="#14213d" stroke-width="1.5"/>
+          <path d="M36,25 Q150,43 264,25" fill="none" stroke="#14213d" stroke-width="0.8" stroke-dasharray="3,2"/>
+          <text x="150" y="70" text-anchor="middle" font-size="9" fill="#14213d">Net height: 1.55 m at posts / 1.524 m at centre</text>
+        </svg>
+      </div>
+      <div class="caption">Fig. 5 — Badminton net</div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>When did badminton become an Olympic sport?</dt>
+          <dd>In 1992, at the Barcelona Olympics.</dd>
+          <dt>What is the net height at the centre?</dt>
+          <dd>1.524 m at the centre, 1.55 m at the posts.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">21</div>
+    </section>
+
+    <!-- ================= PAGE 22: COURT DIAGRAM ================= -->
+    <section class="page" data-page="22" data-section="badminton">
+      <header class="page-header">
+        <span class="section-tag">Section 03 · Badminton</span>
+        <h2>Court Diagram and Dimensions <span class="h2-sub">BWF standard measurements</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <div class="diagram">
+        <svg width="100%" height="auto" viewBox="0 0 520 300" style="max-height:110mm">
+          <!-- court rect: 400 x 182 = 13.40m x 6.10m ratio -->
+          <rect x="60" y="50" width="400" height="182" fill="#fbf7e9" stroke="#14213d" stroke-width="2"/>
+          <!-- singles sidelines (inset 14px = 0.46m) -->
+          <line x1="60" y1="64" x2="460" y2="64" stroke="#8b1e3f" stroke-width="1.2" stroke-dasharray="5,3"/>
+          <line x1="60" y1="218" x2="460" y2="218" stroke="#8b1e3f" stroke-width="1.2" stroke-dasharray="5,3"/>
+          <!-- net (vertical middle) -->
+          <line x1="260" y1="50" x2="260" y2="232" stroke="#4a7c59" stroke-width="3"/>
+          <!-- short service lines (59px from net) -->
+          <line x1="201" y1="50" x2="201" y2="232" stroke="#14213d" stroke-width="1.4"/>
+          <line x1="319" y1="50" x2="319" y2="232" stroke="#14213d" stroke-width="1.4"/>
+          <!-- doubles long service lines (23px from baselines) -->
+          <line x1="83" y1="50" x2="83" y2="232" stroke="#8a7a5a" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="437" y1="50" x2="437" y2="232" stroke="#8a7a5a" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- centre service lines (horizontal, from short service line to baseline) -->
+          <line x1="60" y1="141" x2="201" y2="141" stroke="#14213d" stroke-width="1.2"/>
+          <line x1="319" y1="141" x2="460" y2="141" stroke="#14213d" stroke-width="1.2"/>
+          <!-- net posts -->
+          <rect x="255" y="44" width="10" height="12" fill="#4a7c59"/>
+          <rect x="255" y="226" width="10" height="12" fill="#4a7c59"/>
+          <!-- labels -->
+          <text x="260" y="40" text-anchor="middle" font-size="11" font-weight="700" fill="#4a7c59">NET</text>
+          <text x="260" y="252" text-anchor="middle" font-size="9" fill="#14213d">13.40 m (44 ft)</text>
+          <text x="260" y="267" text-anchor="middle" font-size="9" fill="#14213d">6.10 m (20 ft) doubles · 5.18 m (17 ft) singles</text>
+          <text x="130" y="44" font-size="8" fill="#8b1e3f">Singles sideline</text>
+          <text x="390" y="44" font-size="8" fill="#8b1e3f">Singles sideline</text>
+          <text x="130" y="245" font-size="8" fill="#8b1e3f">Singles sideline</text>
+          <text x="390" y="245" font-size="8" fill="#8b1e3f">Singles sideline</text>
+          <text x="185" y="48" font-size="8" fill="#14213d" text-anchor="end">SS</text>
+          <text x="335" y="48" font-size="8" fill="#14213d">SS</text>
+          <text x="78" y="48" font-size="8" fill="#8a7a5a" text-anchor="end">DLS</text>
+          <text x="442" y="48" font-size="8" fill="#8a7a5a">DLS</text>
+        </svg>
+      </div>
+      <div class="caption">Fig. 6 — Badminton court (SS = short service line; DLS = doubles long service line). Not to scale.</div>
+
+      <h3>Key measurements (BWF)</h3>
+      <table>
+        <tbody>
+          <tr><td>Court length</td><td>13.40 m</td></tr>
+          <tr><td>Doubles width</td><td>6.10 m</td></tr>
+          <tr><td>Singles width</td><td>5.18 m</td></tr>
+          <tr><td>Net height (posts / centre)</td><td>1.55 m / 1.524 m</td></tr>
+          <tr><td>Short service line from net</td><td>1.98 m</td></tr>
+          <tr><td>Doubles long service line from back boundary</td><td>0.76 m</td></tr>
+          <tr><td>Line width</td><td>40 mm</td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-footer">22</div>
+    </section>
+
+    <!-- ================= PAGE 23: RULES ================= -->
+    <section class="page" data-page="23" data-section="badminton">
+      <header class="page-header">
+        <span class="section-tag">Section 03 · Badminton</span>
+        <h2>Rules and Regulations <span class="h2-sub">BWF Laws of Badminton</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>Scoring</h3>
+      <ul>
+        <li>A match is best of three games.</li>
+        <li>Each game is played to <strong>21 points</strong> (rally-point scoring).</li>
+        <li>Every rally gives a point, whoever served.</li>
+        <li>At 20–20, a side must win by <strong>two clear points</strong>.</li>
+        <li>At 29–29, the first side to reach <strong>30 points</strong> wins the game.</li>
+      </ul>
+
+      <h3>Service rules (BWF Law 9)</h3>
+      <ul>
+        <li>Server and receiver stand in diagonally opposite service courts, without touching the boundary lines.</li>
+        <li><strong>Service height (Law 9.1.6):</strong> At the moment the shuttle is hit, the <strong>whole shuttle must be below 1.15 m</strong> from the court surface. This is a fixed height, <em>not</em> a "waist" height.</li>
+        <li><strong>Racket direction (Law 9.1.7):</strong> At impact, the <strong>shaft</strong> of the racket must point in a downward direction.</li>
+        <li>The racket must first hit the base of the shuttle.</li>
+        <li>Both feet of the server and receiver must remain in contact with the floor and stationary until the service is delivered.</li>
+      </ul>
+
+      <h3>Common faults</h3>
+      <ul>
+        <li>Shuttle lands outside the court.</li>
+        <li>Shuttle fails to pass over the net.</li>
+        <li>Player touches the net with the racket or body.</li>
+        <li>Double hit or slinging action.</li>
+        <li>Feet of the server or receiver not in the correct position.</li>
+        <li>Serve hit above 1.15 m, or the racket shaft not pointing downward.</li>
+      </ul>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is the service height limit?</dt>
+          <dd>The whole shuttle must be below 1.15 metres when it is hit.</dd>
+          <dt>At what score does a game end?</dt>
+          <dd>At 21 points, or if tied at 20–20, a side must lead by two points. At 29–29, the first to 30 wins.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">23</div>
+    </section>
+
+    <!-- ================= PAGE 24: SKILLS ================= -->
+    <section class="page" data-page="24" data-section="badminton">
+      <header class="page-header">
+        <span class="section-tag">Section 03 · Badminton</span>
+        <h2>Basic Skills and Techniques <span class="h2-sub">How to hold and hit</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>Grips</h3>
+      <ul>
+        <li><strong>Forehand grip:</strong> Hold the racket as if shaking hands — a natural, relaxed grip.</li>
+        <li><strong>Backhand grip:</strong> Slightly rotate the hand so the thumb rests on the wider bevel of the handle.</li>
+      </ul>
+
+      <h3>Basic strokes</h3>
+      <ul>
+        <li><strong>Clear:</strong> A high, deep shot to the opponent's backcourt.</li>
+        <li><strong>Drop shot:</strong> A soft shot that just clears the net and falls into the frontcourt.</li>
+        <li><strong>Smash:</strong> A powerful overhead shot hit steeply downward.</li>
+        <li><strong>Drive:</strong> A fast, flat shot parallel to the floor.</li>
+        <li><strong>Net shot:</strong> A gentle shot played from near the net.</li>
+      </ul>
+
+      <h3>Footwork</h3>
+      <p>Good footwork lets you reach the shuttle early. Players use a small split-step, a chassé (side step) and a lunge to move smoothly around the court.</p>
+
+      <div class="diagram">
+        <svg width="240" height="70" viewBox="0 0 260 80">
+          <rect x="20" y="15" width="220" height="50" fill="#fbf7e9" stroke="#14213d" stroke-width="1"/>
+          <line x1="130" y1="15" x2="130" y2="65" stroke="#4a7c59" stroke-width="1.5"/>
+          <circle cx="60" cy="40" r="8" fill="#e3eef8" stroke="#14213d" stroke-width="1.2"/>
+          <circle cx="100" cy="40" r="8" fill="#fbe3e3" stroke="#8b1e3f" stroke-width="1.2"/>
+          <circle cx="180" cy="40" r="8" fill="#e3eef8" stroke="#14213d" stroke-width="1.2"/>
+          <text x="60" y="60" text-anchor="middle" font-size="7" fill="#14213d">Base</text>
+          <text x="180" y="60" text-anchor="middle" font-size="7" fill="#14213d">Base</text>
+        </svg>
+      </div>
+      <div class="caption">Fig. 7 — Basic positioning for singles</div>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is a smash?</dt>
+          <dd>A powerful overhead attacking shot hit steeply downward into the opponent's court.</dd>
+          <dt>Why is footwork important in badminton?</dt>
+          <dd>It helps you reach the shuttle early and be in the right position to play a good shot.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">24</div>
+    </section>
+
+    <!-- ================= PAGE 25: SERVING ================= -->
+    <section class="page" data-page="25" data-section="badminton">
+      <header class="page-header">
+        <span class="section-tag">Section 03 · Badminton</span>
+        <h2>Serving and Playing Techniques <span class="h2-sub">Starting the rally correctly</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <h3>Types of serves</h3>
+      <ul>
+        <li><strong>High serve:</strong> A deep, high serve to push the opponent to the backcourt.</li>
+        <li><strong>Low serve:</strong> A soft serve that just clears the net and lands near the short service line.</li>
+        <li><strong>Flick serve:</strong> Looks like a low serve but is flicked deep — used to surprise the opponent.</li>
+        <li><strong>Drive serve:</strong> A fast, flat serve aimed at the opponent's body or backhand.</li>
+      </ul>
+
+      <h3>How to perform a high serve</h3>
+      <ol class="steps">
+        <li>Stand sideways with the non-racket shoulder facing the net.</li>
+        <li>Hold the shuttle in front of the body — the whole shuttle must be below 1.15 m.</li>
+        <li>Draw the racket back and swing smoothly forward. The racket shaft must point downward at impact.</li>
+        <li>Hit the shuttle gently upward so it travels high and deep.</li>
+        <li>Follow through toward the target area.</li>
+      </ol>
+
+      <div class="info-card red">
+        <div class="card-head">Critical Rule</div>
+        At impact, the <strong>whole shuttle must be below 1.15 m</strong>, and the <strong>racket shaft must point downward</strong>. The 1.15 m limit is a fixed height — not a body-relative "waist" height.
+      </div>
+
+      <h3>Playing positions</h3>
+      <p>In singles, the player returns to the centre (base) after each shot. In doubles, players use a <strong>side-by-side</strong> formation when defending and a <strong>front-and-back</strong> formation when attacking.</p>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is a flick serve?</dt>
+          <dd>A deceptive serve that looks like a low serve but is hit deep to surprise the opponent.</dd>
+          <dt>What is the safe service height?</dt>
+          <dd>Below 1.15 metres — measured from the court surface to the whole shuttle.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">25</div>
+    </section>
+
+    <!-- ================= PAGE 26: TERMINOLOGY ================= -->
+    <section class="page" data-page="26" data-section="badminton">
+      <header class="page-header">
+        <span class="section-tag">Section 03 · Badminton</span>
+        <h2>Important Terminology <span class="h2-sub">Words you should know</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Rally</strong></td><td>A sequence of shots exchanged between players until a point is won.</td></tr>
+          <tr><td><strong>Serve</strong></td><td>The stroke that starts a rally.</td></tr>
+          <tr><td><strong>Smash</strong></td><td>A powerful overhead attacking shot.</td></tr>
+          <tr><td><strong>Clear</strong></td><td>A high defensive shot to the backcourt.</td></tr>
+          <tr><td><strong>Drop shot</strong></td><td>A soft shot that drops just over the net.</td></tr>
+          <tr><td><strong>Drive</strong></td><td>A fast, flat shot parallel to the floor.</td></tr>
+          <tr><td><strong>Net shot</strong></td><td>A delicate shot played from near the net.</td></tr>
+          <tr><td><strong>Deuce</strong></td><td>A tied score (20–20 or 29–29) requiring a two-point lead.</td></tr>
+          <tr><td><strong>Let</strong></td><td>A rally replayed without any point awarded.</td></tr>
+          <tr><td><strong>Fault</strong></td><td>An infringement that ends the rally and gives the point to the opponent.</td></tr>
+          <tr><td><strong>Service height</strong></td><td>The whole shuttle must be below 1.15 m at impact.</td></tr>
+          <tr><td><strong>Short service line</strong></td><td>The line 1.98 m from the net that the serve must cross.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="viva">
+        <div class="viva-head"><span class="viva-icon">?</span>Quick Viva</div>
+        <dl>
+          <dt>What is a "let"?</dt>
+          <dd>A rally that is replayed because of an unexpected interruption.</dd>
+          <dt>Difference between a clear and a drop shot?</dt>
+          <dd>A clear goes high and deep to the backcourt; a drop shot is soft and lands near the net.</dd>
+        </dl>
+      </div>
+      <div class="page-footer">26</div>
+    </section>
+
+    <!-- ================= PAGE 27: CONCLUSION ================= -->
+    <section class="page" data-page="27" data-section="closing">
+      <header class="page-header">
+        <span class="section-tag">Closing</span>
+        <h2>Conclusion <span class="h2-sub">What I learnt from this project</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <p>This practical file covered three different but connected areas of physical education — yoga, fitness testing and a game. Each one taught me something useful for everyday life.</p>
+
+      <h3>Yoga</h3>
+      <p>Yoga showed me that good health is more than just the absence of illness. Simple asanas like Tadasana and Katichakrasana — done slowly and correctly — can help prevent and manage lifestyle diseases such as obesity, diabetes, asthma and back pain.</p>
+
+      <h3>Khelo India Fitness Test</h3>
+      <p>The SAI Khelo India Fitness Test helped me understand what "being fit" actually means — body composition, speed, endurance, flexibility and strength. I also learnt the difference between the Class I–III battery (BMI, Flamingo Balance, Plate Tapping) and the Class IV–XII battery (BMI, 50 m, 600 m, Sit &amp; Reach, Curl-Up, Push-Ups).</p>
+
+      <h3>Badminton</h3>
+      <p>Badminton showed me how much detail is behind a game — the court measurements, the 1.15 m service-height rule, the requirement that the racket shaft points downward, and the tactics of singles and doubles. It is a sport of speed, control and smart movement.</p>
+
+      <h3>Final thought</h3>
+      <p>All three topics reminded me that physical education is not just about performance. It is about building healthy habits — daily movement, correct breathing, good posture and regular fitness checks — that stay with us for life.</p>
+
+      <div class="page-footer">27</div>
+    </section>
+
+    <!-- ================= PAGE 28: BIBLIOGRAPHY ================= -->
+    <section class="page" data-page="28" data-section="closing">
+      <header class="page-header">
+        <span class="section-tag">Closing</span>
+        <h2>Bibliography <span class="h2-sub">Sources consulted</span></h2>
+        <div class="title-rule"></div>
+      </header>
+
+      <ol style="font-size:12px;line-height:1.9;padding-left:20px">
+        <li>Central Board of Secondary Education (CBSE). <em>Physical Education (Code 153) — Class XII Syllabus, Academic Session 2026–27.</em> New Delhi: CBSE.</li>
+        <li>NCERT. <em>Health and Physical Education — Textbook for Class XII.</em> New Delhi: NCERT.</li>
+        <li>Sports Authority of India (SAI). <em>Khelo India Fitness Assessment — Administrator's Manual (Version 2.0).</em> New Delhi: SAI. Available at schoolfitness.kheloindia.gov.in</li>
+        <li>Ministry of Youth Affairs and Sports, Government of India. <em>Khelo India School Fitness Assessment Guidelines.</em></li>
+        <li>Badminton World Federation (BWF). <em>Laws of Badminton — Laws 1, 9.1.6 and 9.1.7.</em> Kuala Lumpur: BWF. Available at bwfbadminton.com</li>
+        <li>Pandit, S. <em>Yoga Therapy Assistant — Class XI Textbook.</em> Puducherry: PSSCIVE.</li>
+      </ol>
+
+      <div class="info-card tint" style="margin-top:14px">
+        <div class="card-head">Declaration</div>
+        The content in this file has been compiled and simplified for educational purposes. Technical facts have been verified against the official sources listed above.
+      </div>
+
+      <div class="page-footer">28</div>
+    </section>
+
+    </div><!-- /pages-container -->
+  </div><!-- /viewer -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+(function(){
+  'use strict';
+
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var total = pages.length;
+  var current = 0;
+  var zoom = 1;
+  var ZOOM_STEP = 0.1;
+  var MIN_ZOOM = 0.4;
+  var MAX_ZOOM = 2.0;
+  var STORAGE_KEY = 'pe_file_edits_v3';
+
+  var pagesContainer = document.getElementById('pages-container');
+  var pageIndicator = document.getElementById('page-indicator');
+  var zoomLabel = document.getElementById('zoom-label');
+  var pageList = document.getElementById('pageList');
+  var sidebar = document.getElementById('sidebar');
+
+  /* ---------- SIDEBAR ---------- */
+  pages.forEach(function(page, index){
+    var btn = document.createElement('button');
+    var num = page.getAttribute('data-page') || (index + 1);
+    var label = page.querySelector('h2') ? page.querySelector('h2').childNodes[0].textContent.trim() : ('Page ' + num);
+    if (label.length > 26) label = label.substring(0, 24) + '…';
+    btn.innerHTML = '<span class="pg-num">' + num + '</span> ' + label;
+    btn.addEventListener('click', function(){ showPage(index); });
+    pageList.appendChild(btn);
+  });
+
+  /* ---------- SHOW PAGE ---------- */
+  function showPage(index, scroll){
+    if (index < 0 || index >= total) return;
+    current = index;
+    pages.forEach(function(p, i){
+      p.classList.toggle('hidden-page', i !== current);
+    });
+    updateIndicator();
+    updateSidebarActive();
+    if (scroll !== false) {
+      document.getElementById('viewer').scrollTop = 0;
+    }
+  }
+
+  function updateIndicator(){
+    pageIndicator.textContent = 'Page ' + (current + 1) + ' of ' + total;
+  }
+
+  function updateSidebarActive(){
+    var btns = pageList.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle('active', i === current);
+    }
+    var active = pageList.querySelector('button.active');
+    if (active) active.scrollIntoView({ block: 'nearest' });
+  }
+
+  /* ---------- NAV ---------- */
+  document.getElementById('prevBtn').addEventListener('click', function(){ showPage(current - 1); });
+  document.getElementById('nextBtn').addEventListener('click', function(){ showPage(current + 1); });
+
+  document.addEventListener('keydown', function(e){
+    if (e.target.isContentEditable) return;
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); showPage(current - 1); }
+    else if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); showPage(current + 1); }
+  });
+
+  /* ---------- ZOOM ---------- */
+  function applyZoom(){
+    pagesContainer.style.transform = 'scale(' + zoom + ')';
+    zoomLabel.textContent = Math.round(zoom * 100) + '%';
+  }
+  document.getElementById('zoomIn').addEventListener('click', function(){
+    zoom = Math.min(MAX_ZOOM, zoom + ZOOM_STEP); applyZoom();
+  });
+  document.getElementById('zoomOut').addEventListener('click', function(){
+    zoom = Math.max(MIN_ZOOM, zoom - ZOOM_STEP); applyZoom();
+  });
+  document.getElementById('fitBtn').addEventListener('click', function(){
+    var viewer = document.getElementById('viewer');
+    var viewerWidth = viewer.clientWidth - 60;
+    var rect = pages[0].getBoundingClientRect();
+    var actualWidth = rect.width / zoom;
+    if (actualWidth > 0) {
+      zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, viewerWidth / actualWidth));
+      applyZoom();
+    }
+  });
+
+  /* ---------- FULLSCREEN ---------- */
+  document.getElementById('fullBtn').addEventListener('click', function(){
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(function(){});
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  /* ---------- PRINT CURRENT PAGE ---------- */
+  document.getElementById('printPageBtn').addEventListener('click', function(){
+    var old = document.getElementById('print-single-style');
+    if (old) old.remove();
+    document.body.classList.add('print-single-mode');
+    var style = document.createElement('style');
+    style.id = 'print-single-style';
+    style.textContent =
+      '@media print{' +
+      'body.print-single-mode .page{display:none!important}' +
+      'body.print-single-mode .page[data-page="' + (current + 1) + '"]{display:flex!important}' +
+      '}';
+    document.head.appendChild(style);
+    window.print();
+    setTimeout(function(){
+      document.body.classList.remove('print-single-mode');
+      var el = document.getElementById('print-single-style');
+      if (el) el.remove();
+    }, 1000);
+  });
+
+  /* ---------- PRINT ALL ---------- */
+  document.getElementById('printAllBtn').addEventListener('click', function(){
+    var old = document.getElementById('print-single-style');
+    if (old) old.remove();
+    document.body.classList.remove('print-single-mode');
+    pages.forEach(function(p){ p.classList.remove('hidden-page'); });
+    window.print();
+    setTimeout(function(){ showPage(current, false); }, 1000);
+  });
+
+  /* ---------- SIDEBAR TOGGLE ---------- */
+  document.getElementById('toggleSidebar').addEventListener('click', function(){
+    sidebar.classList.toggle('hidden');
+  });
+  pageList.addEventListener('click', function(){
+    if (window.innerWidth <= 900) sidebar.classList.add('hidden');
+  });
+
+  /* ---------- LOCALSTORAGE ---------- */
+  function collectEditableState(){
+    var state = {};
+    var editables = document.querySelectorAll('[contenteditable="true"]');
+    editables.forEach(function(el, idx){ state['editable_' + idx] = el.innerHTML; });
+    return state;
+  }
+  function saveState(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collectEditableState())); } catch (e) {}
+  }
+  function restoreState(){
+    var raw;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return; }
+    if (!raw) return;
+    var state;
+    try { state = JSON.parse(raw); } catch (e) { return; }
+    var editables = document.querySelectorAll('[contenteditable="true"]');
+    editables.forEach(function(el, idx){
+      var key = 'editable_' + idx;
+      if (state[key] !== undefined) el.innerHTML = state[key];
+    });
+  }
+  document.addEventListener('input', function(e){
+    if (e.target && e.target.isContentEditable) saveState();
+  });
+  window.addEventListener('beforeunload', saveState);
+
+  /* ---------- INIT ---------- */
+  restoreState();
+  showPage(0, false);
+  pages.forEach(function(p, i){ p.classList.toggle('hidden-page', i !== 0); });
+  updateSidebarActive();
+  updateIndicator();
+
+})();
+</script>
+</body>
+</html>
